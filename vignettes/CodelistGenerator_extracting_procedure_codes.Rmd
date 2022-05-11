@@ -140,8 +140,7 @@ colonoscopy_codes1<-get_candidate_codes(keywords="colonoscopy",
                     vocabulary_database_schema =  vocabulary_database_schema)
 toc()
 
-
-#123.53 sec elapsed
+saveRDS(colonoscopy_codes1, here("vignettes","proc_data_02.RData"))
 
 ```
 
@@ -170,5 +169,78 @@ code_comparison<-full_join(codes_from_descendants  %>% mutate(type1="4249893 and
                      "Only CodelistGenerator",
                      NA)))) %>% 
   select(-c("type1","type2"))
+
+
+
+saveRDS(code_comparison, here("vignettes","proc_data_03.RData"))
+
 ```
 
+```{r,  message=FALSE, warning=FALSE,echo=FALSE}
+code_comparison<-readRDS(here("vignettes","proc_data_03.RData"))
+```
+
+```{r,  message=FALSE, warning=FALSE } 
+kable(code_comparison %>% 
+  group_by(type) %>% 
+  tally())
+```
+
+What are these extra codes picked up by CodelistGenerator?
+```{r,  message=FALSE, warning=FALSE }
+datatable(code_comparison %>% 
+            filter(type=="Only CodelistGenerator"),
+          rownames=FALSE,
+          options = list(
+  pageLength = 10,
+  lengthMenu = c(10, 20,50)
+))
+```
+
+Next, let's do a search for a single keyword of "colonoscopy" with excluding CT/virtual colonoscopy, and including descendants but not ancestors. This time we also look at multiple domains in this case procedure and also observation
+
+```{r, eval=FALSE }
+tic()
+colonoscopy_codes2<-get_candidate_codes(keywords="colonoscopy",
+                    domains=c("Procedure","Observation"),
+                    search_synonyms = FALSE,
+                    fuzzy_match = FALSE,
+                    exclude = c("Virtual CT colonoscopy", "CT colonoscopy"),
+                    include_descendants = FALSE,
+                    include_ancestor = FALSE,
+                    verbose = TRUE ,
+                    db=db,
+                    vocabulary_database_schema =  vocabulary_database_schema)
+toc()
+
+saveRDS(colonoscopy_codes2, here("vignettes","proc_data_04.RData"))
+
+```
+
+
+
+## Review mappings from source vocabularies
+Perhaps we want to see what read codes map to our candidate codelist. We can get these by running
+
+```{r,  message=FALSE, warning=FALSE,echo=FALSE}
+read_mappings<-readRDS(here("vignettes","intro_data_05.RData"))
+```
+
+```{r,  eval=FALSE }
+read_mappings<-show_mappings(candidate_codelist=colonoscopy_codes1,
+                    source_vocabularies="Read",
+                    db=db,
+                    vocabulary_database_schema =  vocabulary_database_schema)
+
+saveRDS(read_mappings, here("vignettes","proc_data_05.RData"))
+
+```
+
+```{r,  message=FALSE, warning=FALSE }
+datatable(read_mappings,
+          rownames=FALSE,
+          options = list(
+  pageLength = 10,
+  lengthMenu = c(10, 20,50)
+))
+```
