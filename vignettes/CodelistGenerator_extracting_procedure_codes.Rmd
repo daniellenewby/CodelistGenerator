@@ -125,7 +125,7 @@ To try and include all such terms that could be included we can use CodelistGene
 library(CodelistGenerator)
 ```
 
-First, let's do a simple search for a single keyword of "dementia" without any exclusions, without searching synonyms, and including descendants but not ancestors.
+First, let's do a simple search for a single keyword of "colonoscopy" without any exclusions, and including descendants but not ancestors.
 ```{r, eval=FALSE }
 tic()
 colonoscopy_codes1<-get_candidate_codes(keywords="colonoscopy",
@@ -146,14 +146,29 @@ toc()
 ```
 
 ```{r,  message=FALSE, warning=FALSE,echo=FALSE}
-dementia_codes1<-readRDS(here("vignettes","intro_data_02.RData"))
+colonoscopy_codes1<-readRDS(here("vignettes","proc_data_02.RData"))
 ```
 
 ```{r,  message=FALSE, warning=FALSE }
-datatable(dementia_codes1,
+datatable(colonoscopy_codes1,
           rownames=FALSE,
           options = list(
   pageLength = 10,
   lengthMenu = c(10, 20,50)
 ))
 ```
+
+What is the difference between this codelist and the one from 4249893 and its descendants?
+```{r,  eval=FALSE }
+code_comparison<-full_join(codes_from_descendants  %>% mutate(type1="4249893 and descendants"), 
+                     colonoscopy_codes1  %>% mutate(type2="CodelistGenerator")) %>% 
+  mutate(type=ifelse(!is.na(type1) & !is.na(type2),
+                     "Both",
+              ifelse(!is.na(type1) & is.na(type2),
+                     "Only 4249893 and descendants",
+              ifelse(is.na(type1) & !is.na(type2),
+                     "Only CodelistGenerator",
+                     NA)))) %>% 
+  select(-c("type1","type2"))
+```
+

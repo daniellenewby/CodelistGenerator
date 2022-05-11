@@ -127,12 +127,12 @@ To try and include all such terms that could be included we can use CodelistGene
 library(CodelistGenerator)
 ```
 
-First, let's do a simple search for a single keyword of "dementia" without any exclusions, without searching synonyms, and including descendants but not ancestors.
+First, let's do a simple search for a single keyword of "mteformin" without any exclusions, without searching synonyms, and including descendants but not ancestors.
 ```{r, eval=FALSE }
 tic()
 metformin_codes1<-get_candidate_codes(keywords="metformin",
                     domains="Drug",
-                    search_synonyms = TRUE,
+                    search_synonyms = FALSE,
                     fuzzy_match = FALSE,
                     exclude = NULL,
                     include_descendants = TRUE,
@@ -144,7 +144,7 @@ toc()
 
 
 tic()
-metformin_codes1<-get_candidate_codes(keywords="diabetes",
+diabetes_codes1<-get_candidate_codes(keywords="diabetes",
                     domains="Condition",
                     search_synonyms = TRUE,
                     fuzzy_match = FALSE,
