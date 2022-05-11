@@ -1,13 +1,14 @@
 ---
-title: "CodelistGenerator Extracting Medication Codes"
+title: "CodelistGenerator Extracting Procedure Codes"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{CodelistGenerator_extracting_medication_codes}
+  %\VignetteIndexEntry{CodelistGenerator_extracting_procedure_codes}
   %\VignetteEncoding{UTF-8}
   %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
   chunk_output_type: console
 ---
+
 
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
@@ -32,12 +33,8 @@ library(tictoc)
 library(CodelistGenerator)
 ```
 
-## Creating a codelists for a single, multiple and classes of medications
-For this vignette ee are going to create codelists for:
-  * Single medication (metformin)
-  * Multiple medications (metformin and insulin)
-  * Class of medications (lipid lowering)
-In these example we are going to generate a candidate codelists only looking for codes in the drug domain.
+## Creating a codelists for procedure
+For this vignette we are going to create codelists for the procedure "colonoscopy" (https://athena.ohdsi.org/search-terms/terms/4249893). In these example we are going to generate a candidate codelists only looking for codes in the procedure domain.
 
 ## Getting the OMOP CDM vocabularies
 As stated in other vignettes if you do not have ready access to a database with data in the OMOP CDM format (which will necessarily contain the vocabulary tables), you will first need to obtain the OMOP CDM vocabularies from https://athena.ohdsi.org. Once these are downloaded, we can make a vocabulary only database like so:
@@ -77,7 +74,7 @@ vocabulary_database_schema<-"main"
 
 The structure of each of these tables is described in detail at: https://ohdsi.github.io/CommonDataModel/cdm53.html#Vocabulary_Tables 
 
-## Codelist from "Metformin" (ingredient) and its descendants
+## Codelist from "colonoscopy"and its descendants
 The simplest approach to identifying potential codes is to take a high-level code and include all its descendants. 
 ```{r, eval=FALSE}
 library(dplyr)
@@ -93,7 +90,7 @@ codes_from_descendants<-tbl(db,
   sql(paste0("SELECT * FROM ",
      vocabulary_database_schema,
      ".concept_ancestor"))) %>% 
-  filter(ancestor_concept_id=="1503297") %>% 
+  filter(ancestor_concept_id=="4249893") %>% 
   select("descendant_concept_id") %>% 
   rename("concept_id"="descendant_concept_id") %>% 
   left_join(tbl(db, sql(paste0("SELECT * FROM ",
@@ -104,12 +101,13 @@ codes_from_descendants<-tbl(db,
   collect()
 
 toc()
-# saveRDS(codes_from_descendants, here("Github","CodelistGenerator" , "vignettes","med_data_01.RData"))
+
+saveRDS(codes_from_descendants, here("vignettes","proc_data_01.RData"))
 
 ```
 
 ```{r,  message=FALSE, warning=FALSE,echo=FALSE}
-codes_from_descendants<-readRDS(here("Github","CodelistGenerator" , "vignettes","med_data_01.RData"))
+codes_from_descendants<-readRDS(here("vignettes","proc_data_01.RData"))
 ```
 
 ```{r,  message=FALSE, warning=FALSE }  
@@ -130,31 +128,20 @@ library(CodelistGenerator)
 First, let's do a simple search for a single keyword of "dementia" without any exclusions, without searching synonyms, and including descendants but not ancestors.
 ```{r, eval=FALSE }
 tic()
-metformin_codes1<-get_candidate_codes(keywords="metformin",
-                    domains="Drug",
+colonoscopy_codes1<-get_candidate_codes(keywords="colonoscopy",
+                    domains="Procedure",
                     search_synonyms = TRUE,
                     fuzzy_match = FALSE,
                     exclude = NULL,
                     include_descendants = TRUE,
                     include_ancestor = FALSE,
+                    verbose = TRUE ,
                     db=db,
                     vocabulary_database_schema =  vocabulary_database_schema)
 toc()
-# the above takes too long
 
 
-tic()
-metformin_codes1<-get_candidate_codes(keywords="diabetes",
-                    domains="Condition",
-                    search_synonyms = TRUE,
-                    fuzzy_match = FALSE,
-                    exclude = NULL,
-                    include_descendants = TRUE,
-                    include_ancestor = FALSE,
-                    db=db,
-                    vocabulary_database_schema =  vocabulary_database_schema)
-toc()
-# takes 199.8 seconds
+#123.53 sec elapsed
 
 ```
 
@@ -170,83 +157,3 @@ datatable(dementia_codes1,
   lengthMenu = c(10, 20,50)
 ))
 ```
-
-What is the difference between this codelist and the one from 4182210 and its descendants?
-```{r,  eval=FALSE }
-code_comparison<-full_join(codes_from_descendants  %>% mutate(type1="4182210 and descendants"), 
-                     dementia_codes1  %>% mutate(type2="CodelistGenerator")) %>% 
-  mutate(type=ifelse(!is.na(type1) & !is.na(type2),
-                     "Both",
-              ifelse(!is.na(type1) & is.na(type2),
-                     "Only 4182210 and descendants",
-              ifelse(is.na(type1) & !is.na(type2),
-                     "Only CodelistGenerator",
-                     NA)))) %>% 
-  select(-c("type1","type2"))
-```
-
-```{r,  message=FALSE, warning=FALSE,echo=FALSE}
-code_comparison<-readRDS(here("vignettes","intro_data_03.RData"))
-```
-
-```{r,  message=FALSE, warning=FALSE } 
-kable(code_comparison %>% 
-  group_by(type) %>% 
-  tally())
-```
-
-What are these extra codes picked up by CodelistGenerator?
-```{r,  message=FALSE, warning=FALSE }
-datatable(code_comparison %>% 
-            filter(type=="Only CodelistGenerator"),
-          rownames=FALSE,
-          options = list(
-  pageLength = 10,
-  lengthMenu = c(10, 20,50)
-))
-```
-
-## Review mappings from source vocabularies
-Perhaps we want to see what ICD10CM codes map to our candidate codelist. We can get these by running
-
-```{r,  message=FALSE, warning=FALSE,echo=FALSE}
-icd_mappings<-readRDS(here("vignettes","intro_data_04.RData"))
-```
-
-```{r,  eval=FALSE }
-icd_mappings<-show_mappings(candidate_codelist=dementia_codes4,
-                    source_vocabularies="ICD10CM",
-                    db=db,
-                    vocabulary_database_schema =  vocabulary_database_schema)
-```
-
-```{r,  message=FALSE, warning=FALSE }
-datatable(icd_mappings,
-          rownames=FALSE,
-          options = list(
-  pageLength = 10,
-  lengthMenu = c(10, 20,50)
-))
-```
-
-
-```{r,  message=FALSE, warning=FALSE,echo=FALSE}
-read_mappings<-readRDS(here("vignettes","intro_data_05.RData"))
-```
-
-```{r,  eval=FALSE }
-read_mappings<-show_mappings(candidate_codelist=dementia_codes4,
-                    source_vocabularies="Read",
-                    db=db,
-                    vocabulary_database_schema =  vocabulary_database_schema)
-```
-
-```{r,  message=FALSE, warning=FALSE }
-datatable(read_mappings,
-          rownames=FALSE,
-          options = list(
-  pageLength = 10,
-  lengthMenu = c(10, 20,50)
-))
-```
-
