@@ -47,9 +47,8 @@ library(here)
 ```
 
 ```{r, eval=FALSE}
-#vocab.folder<-Sys.getenv("omop_cdm_vocab_path") # path to directory of unzipped files
 
-vocab.folder<-"C:/Users/dnewby/Desktop/Athena Vocabs"
+vocab.folder<-Sys.getenv("omop_cdm_vocab_path") # path to directory of unzipped files
 
 concept<-read_delim(paste0(vocab.folder,"/CONCEPT.csv"),
      "\t", escape_double = FALSE, trim_ws = TRUE)
@@ -231,7 +230,7 @@ datatable(colonoscopy_codes2,
   lengthMenu = c(10, 20,50)
 ))
 ```
-```
+
 
 ## Review mappings from source vocabularies
 Perhaps we want to see what read codes map to our candidate codelist. We can get these by running
