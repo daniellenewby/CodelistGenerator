@@ -197,7 +197,7 @@ datatable(code_comparison %>%
 ))
 ```
 
-Next, let's do a search for a single keyword of "colonoscopy" with excluding CT/virtual colonoscopy, looking at both procedure and observation domains but excluding descendants and ancestors.
+Next, let's do a search for a single keyword of "colonoscopy" with excluding CT/virtual colonoscopy, looking at both procedure and observation domains including descendants but excluding ancestors.
 
 ```{r, eval=FALSE }
 tic()
@@ -232,7 +232,6 @@ datatable(colonoscopy_codes2,
 ))
 ```
 ```
-
 
 ## Review mappings from source vocabularies
 Perhaps we want to see what read codes map to our candidate codelist. We can get these by running
