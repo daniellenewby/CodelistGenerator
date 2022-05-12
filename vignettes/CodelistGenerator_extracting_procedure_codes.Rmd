@@ -29,7 +29,6 @@ library(dplyr)
 library(stringr)
 library(DT)
 library(kableExtra)
-library(tictoc)
 library(CodelistGenerator)
 ```
 
@@ -84,7 +83,6 @@ library(kableExtra)
 
 ```{r, eval=FALSE}
 
-tic()
 codes_from_descendants<-tbl(db, 
   sql(paste0("SELECT * FROM ",
      vocabulary_database_schema,
@@ -99,7 +97,6 @@ codes_from_descendants<-tbl(db,
          "domain_id", "vocabulary_id") %>% 
   collect()
 
-toc()
 
 ```
 
@@ -124,7 +121,7 @@ library(CodelistGenerator)
 
 First, let's do a simple search for a single keyword of "colonoscopy" without any exclusions, and including descendants but not ancestors.
 ```{r, eval=FALSE }
-tic()
+
 colonoscopy_codes1<-get_candidate_codes(keywords="colonoscopy",
                     domains="Procedure",
                     search_synonyms = TRUE,
@@ -135,7 +132,7 @@ colonoscopy_codes1<-get_candidate_codes(keywords="colonoscopy",
                     verbose = TRUE ,
                     db=db,
                     vocabulary_database_schema =  vocabulary_database_schema)
-toc()
+
 
 ```
 
@@ -191,7 +188,7 @@ datatable(code_comparison %>%
 Next, let's do a search for a single keyword of "colonoscopy" with excluding CT/virtual colonoscopy, looking at both procedure and observation domains including descendants but excluding ancestors.
 
 ```{r, eval=FALSE }
-tic()
+
 colonoscopy_codes2<-get_candidate_codes(keywords="colonoscopy",
                     domains=c("Procedure","Observation"),
                     search_synonyms = FALSE,
@@ -202,7 +199,7 @@ colonoscopy_codes2<-get_candidate_codes(keywords="colonoscopy",
                     verbose = TRUE ,
                     db=db,
                     vocabulary_database_schema =  vocabulary_database_schema)
-toc()
+
 
 ```
 
