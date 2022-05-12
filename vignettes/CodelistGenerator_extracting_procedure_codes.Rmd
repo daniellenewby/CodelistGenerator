@@ -75,7 +75,7 @@ vocabulary_database_schema<-"main"
 The structure of each of these tables is described in detail at: https://ohdsi.github.io/CommonDataModel/cdm53.html#Vocabulary_Tables 
 
 ## Codelist from "colonoscopy"and its descendants
-The simplest approach to identifying potential codes is to take a high-level code and include all its descendants. 
+The simplest approach to identifying potential codes is to take a high-level code and include all its descendants. There are some codes in this example that are not mapped so do not contain concept names.
 ```{r, eval=FALSE}
 library(dplyr)
 library(stringr)
@@ -102,12 +102,12 @@ codes_from_descendants<-tbl(db,
 
 toc()
 
-saveRDS(codes_from_descendants, here("vignettes","proc_data_01.RData"))
+# saveRDS(codes_from_descendants, here("GitHub", "CodelistGenerator", "vignettes","proc_data_01.RData"))
 
 ```
 
 ```{r,  message=FALSE, warning=FALSE,echo=FALSE}
-codes_from_descendants<-readRDS(here("vignettes","proc_data_01.RData"))
+codes_from_descendants<-readRDS(here("GitHub", "CodelistGenerator", "vignettes","proc_data_01.RData"))
 ```
 
 ```{r,  message=FALSE, warning=FALSE }  
@@ -140,12 +140,12 @@ colonoscopy_codes1<-get_candidate_codes(keywords="colonoscopy",
                     vocabulary_database_schema =  vocabulary_database_schema)
 toc()
 
-saveRDS(colonoscopy_codes1, here("vignettes","proc_data_02.RData"))
+saveRDS(colonoscopy_codes1, here("GitHub", "CodelistGenerator", "vignettes","proc_data_02.RData"))
 
 ```
 
 ```{r,  message=FALSE, warning=FALSE,echo=FALSE}
-colonoscopy_codes1<-readRDS(here("vignettes","proc_data_02.RData"))
+colonoscopy_codes1<-readRDS(here("GitHub", "CodelistGenerator", "vignettes","proc_data_02.RData"))
 ```
 
 ```{r,  message=FALSE, warning=FALSE }
@@ -172,12 +172,12 @@ code_comparison<-full_join(codes_from_descendants  %>% mutate(type1="4249893 and
 
 
 
-saveRDS(code_comparison, here("vignettes","proc_data_03.RData"))
+saveRDS(code_comparison, here("GitHub", "CodelistGenerator", "vignettes","proc_data_03.RData"))
 
 ```
 
 ```{r,  message=FALSE, warning=FALSE,echo=FALSE}
-code_comparison<-readRDS(here("vignettes","proc_data_03.RData"))
+code_comparison<-readRDS(here("GitHub", "CodelistGenerator", "vignettes","proc_data_03.RData"))
 ```
 
 ```{r,  message=FALSE, warning=FALSE } 
@@ -197,7 +197,7 @@ datatable(code_comparison %>%
 ))
 ```
 
-Next, let's do a search for a single keyword of "colonoscopy" with excluding CT/virtual colonoscopy, and including descendants but not ancestors. This time we also look at multiple domains in this case procedure and also observation
+Next, let's do a search for a single keyword of "colonoscopy" with excluding CT/virtual colonoscopy, looking at both procedure and observation domains but excluding descendants and ancestors.
 
 ```{r, eval=FALSE }
 tic()
@@ -206,33 +206,48 @@ colonoscopy_codes2<-get_candidate_codes(keywords="colonoscopy",
                     search_synonyms = FALSE,
                     fuzzy_match = FALSE,
                     exclude = c("Virtual CT colonoscopy", "CT colonoscopy"),
-                    include_descendants = FALSE,
+                    include_descendants = TRUE,
                     include_ancestor = FALSE,
                     verbose = TRUE ,
                     db=db,
                     vocabulary_database_schema =  vocabulary_database_schema)
 toc()
 
-saveRDS(colonoscopy_codes2, here("vignettes","proc_data_04.RData"))
+saveRDS(colonoscopy_codes2, here("GitHub", "CodelistGenerator", "vignettes","proc_data_04.RData"))
 
 ```
 
+```{r,  message=FALSE, warning=FALSE,echo=FALSE}
+colonoscopy_codes2<-readRDS(here("GitHub", "CodelistGenerator", "vignettes","proc_data_04.RData"))
+```
+
+What are the codes now?
+```{r,  message=FALSE, warning=FALSE }
+
+datatable(colonoscopy_codes2,
+          rownames=FALSE,
+          options = list(
+  pageLength = 10,
+  lengthMenu = c(10, 20,50)
+))
+```
+```
 
 
 ## Review mappings from source vocabularies
 Perhaps we want to see what read codes map to our candidate codelist. We can get these by running
 
 ```{r,  message=FALSE, warning=FALSE,echo=FALSE}
-read_mappings<-readRDS(here("vignettes","intro_data_05.RData"))
+read_mappings<-readRDS(here("GitHub", "CodelistGenerator", "vignettes","intro_data_05.RData"))
 ```
 
 ```{r,  eval=FALSE }
-read_mappings<-show_mappings(candidate_codelist=colonoscopy_codes1,
+read_mappings<-show_mappings(candidate_codelist=colonoscopy_codes2,
                     source_vocabularies="Read",
                     db=db,
                     vocabulary_database_schema =  vocabulary_database_schema)
 
-saveRDS(read_mappings, here("vignettes","proc_data_05.RData"))
+saveRDS(read_mappings, here("GitHub", "CodelistGenerator", "vignettes","proc_data_05.RData"))
 
 ```
 
