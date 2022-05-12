@@ -1,5 +1,5 @@
 ---
-title: "CodelistGenerator Extracting Procedure Codes"
+title: "CodelistGenerator_extracting_procedure_codes"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{CodelistGenerator_extracting_procedure_codes}
