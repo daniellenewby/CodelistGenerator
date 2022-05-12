@@ -101,8 +101,6 @@ codes_from_descendants<-tbl(db,
 
 toc()
 
-# saveRDS(codes_from_descendants, here("GitHub", "CodelistGenerator", "vignettes","proc_data_01.RData"))
-
 ```
 
 ```{r,  message=FALSE, warning=FALSE,echo=FALSE}
@@ -139,8 +137,6 @@ colonoscopy_codes1<-get_candidate_codes(keywords="colonoscopy",
                     vocabulary_database_schema =  vocabulary_database_schema)
 toc()
 
-saveRDS(colonoscopy_codes1, here("GitHub", "CodelistGenerator", "vignettes","proc_data_02.RData"))
-
 ```
 
 ```{r,  message=FALSE, warning=FALSE,echo=FALSE}
@@ -168,10 +164,6 @@ code_comparison<-full_join(codes_from_descendants  %>% mutate(type1="4249893 and
                      "Only CodelistGenerator",
                      NA)))) %>% 
   select(-c("type1","type2"))
-
-
-
-saveRDS(code_comparison, here("GitHub", "CodelistGenerator", "vignettes","proc_data_03.RData"))
 
 ```
 
@@ -212,8 +204,6 @@ colonoscopy_codes2<-get_candidate_codes(keywords="colonoscopy",
                     vocabulary_database_schema =  vocabulary_database_schema)
 toc()
 
-saveRDS(colonoscopy_codes2, here("GitHub", "CodelistGenerator", "vignettes","proc_data_04.RData"))
-
 ```
 
 ```{r,  message=FALSE, warning=FALSE,echo=FALSE}
@@ -244,9 +234,6 @@ read_mappings<-show_mappings(candidate_codelist=colonoscopy_codes2,
                     source_vocabularies="Read",
                     db=db,
                     vocabulary_database_schema =  vocabulary_database_schema)
-
-saveRDS(read_mappings, here("GitHub", "CodelistGenerator", "vignettes","proc_data_05.RData"))
-
 ```
 
 ```{r,  message=FALSE, warning=FALSE }
