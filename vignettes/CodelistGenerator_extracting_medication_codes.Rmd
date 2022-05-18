@@ -130,7 +130,7 @@ library(CodelistGenerator)
 First, let's do a simple search for a single keyword of "mteformin" without any exclusions, without searching synonyms, and including descendants but not ancestors.
 ```{r, eval=FALSE }
 tic()
-metformin_codes1<-get_candidate_codes(keywords="metformin",
+metformin_codes1<-get_candidate_codes(keywords="Metformin 1000 MG Oral Tablet",
                     domains="Drug",
                     search_synonyms = FALSE,
                     fuzzy_match = FALSE,
